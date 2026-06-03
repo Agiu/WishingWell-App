@@ -17,7 +17,6 @@ let package = Package(
             name: "WishingWell",
             targets: ["AppModule"],
             bundleIdentifier: "com.kaelub.WishingWell",
-            teamIdentifier: "",
             displayVersion: "1.0",
             bundleVersion: "1",
             appIcon: .placeholder(icon: .sparkle),
