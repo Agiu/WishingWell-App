@@ -24,9 +24,10 @@ struct PastReflectionsView: View {
                         Text("Past Reflections")
                             .font(WWTypography.largeTitle)
                             .foregroundStyle(WWColor.luminousText)
+                            .accessibilityAddTraits(.isHeader)
 
                         Text("Everything you have placed in your well, gathered softly.")
-                            .font(WWTypography.body)
+                            .font(WWTypography.lead)
                             .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                     }
 

@@ -1,29 +1,62 @@
 import SwiftUI
 
 struct RootView: View {
-    @State private var selectedTab: AppTab = .home
-    @State private var hasSeenWelcome = false
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+    @State private var selectedTab: AppTab = .feed
+    @State private var onboardingStep: OnboardingStep = .welcome
     @StateObject private var store = ManifestationStore()
+
+    private enum OnboardingStep {
+        case welcome
+        case firstManifestation
+    }
 
     var body: some View {
         Group {
-            if hasSeenWelcome {
+            if hasCompletedOnboarding {
                 AppTabView(selectedTab: $selectedTab)
             } else {
-                WelcomeView {
-                    withAnimation(.easeInOut(duration: 0.35)) {
-                        hasSeenWelcome = true
-                    }
-                }
+                onboarding
             }
         }
         .tint(WWColor.accent)
         .environmentObject(store)
     }
+
+    // First run teaches the loop in one path: Welcome -> create your first
+    // manifestation -> land in the feed where it now lives.
+    @ViewBuilder
+    private var onboarding: some View {
+        switch onboardingStep {
+        case .welcome:
+            WelcomeView {
+                withAnimation(.easeInOut(duration: 0.35)) {
+                    onboardingStep = .firstManifestation
+                }
+            }
+        case .firstManifestation:
+            NavigationStack {
+                CreateWishView(
+                    isOnboarding: true,
+                    onCancel: { finishOnboarding() },
+                    onSubmit: { _ in finishOnboarding() }
+                )
+            }
+            .transition(.opacity)
+        }
+    }
+
+    private func finishOnboarding() {
+        selectedTab = .feed
+        withAnimation(.easeInOut(duration: 0.35)) {
+            hasCompletedOnboarding = true
+        }
+    }
 }
 
 private struct AppTabView: View {
     @Binding var selectedTab: AppTab
+    @State private var showingCreate = false
 
     var body: some View {
         NavigationStack {
@@ -36,15 +69,26 @@ private struct AppTabView: View {
                         .background(Color.clear)
                 }
         }
+        .fullScreenCover(isPresented: $showingCreate) {
+            NavigationStack {
+                CreateWishView(
+                    onCancel: { showingCreate = false },
+                    onSubmit: { _ in
+                        showingCreate = false
+                        selectedTab = .feed
+                    }
+                )
+            }
+        }
     }
 
     @ViewBuilder
     private func screen(for tab: AppTab) -> some View {
         switch tab {
         case .home:
-            HomeView(selectedTab: $selectedTab)
+            HomeView(onCreate: { showingCreate = true })
         case .feed:
-            FeedView()
+            FeedView(onCreate: { showingCreate = true })
         }
     }
 }
@@ -82,6 +126,10 @@ private struct FloatingTabBar: View {
                     }
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(tab.title)
+                .accessibilityAddTraits(
+                    selectedTab == tab ? [.isButton, .isSelected] : .isButton
+                )
             }
         }
         .padding(6)

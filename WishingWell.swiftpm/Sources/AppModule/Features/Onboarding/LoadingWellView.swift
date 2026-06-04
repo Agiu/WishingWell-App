@@ -3,6 +3,7 @@ import SwiftUI
 struct LoadingWellView: View {
     let onFinished: () -> Void
 
+    @Environment(\.accessibilityReduceMotion) private var reduceMotion
     @State private var ropeLength: CGFloat = 0
     @State private var bucketRotation: Double = -8
 
@@ -17,6 +18,7 @@ struct LoadingWellView: View {
                         .font(.system(size: 86, weight: .regular))
                         .foregroundStyle(WWColor.luminousText)
                         .shadow(color: WWColor.deepWell.opacity(0.18), radius: 12, y: 10)
+                        .accessibilityHidden(true)
                 }
                 .rotationEffect(.degrees(bucketRotation), anchor: .top)
 
@@ -24,8 +26,9 @@ struct LoadingWellView: View {
                     .font(WWTypography.headline)
                     .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                     .position(x: proxy.size.width / 2, y: proxy.size.height * 0.72)
-                    .opacity(ropeLength > proxy.size.height * 0.2 ? 1 : 0)
+                    .opacity(reduceMotion || ropeLength > proxy.size.height * 0.2 ? 1 : 0)
                     .animation(.easeIn(duration: 0.5), value: ropeLength)
+                    .accessibilityLabel("Loading Wishing Well")
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .task {
@@ -37,6 +40,14 @@ struct LoadingWellView: View {
 
     @MainActor
     private func runAnimation(screenHeight: CGFloat) async {
+        // Honor Reduce Motion: hold a brief, still loading moment instead of
+        // lowering and raising the bucket, then continue.
+        guard !reduceMotion else {
+            try? await Task.sleep(nanoseconds: 1_200_000_000)
+            onFinished()
+            return
+        }
+
         withAnimation(.easeInOut(duration: 2.8)) {
             ropeLength = screenHeight * 0.42
         }

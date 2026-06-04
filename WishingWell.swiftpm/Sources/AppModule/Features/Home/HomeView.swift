@@ -3,9 +3,7 @@ import UIKit
 
 struct HomeView: View {
     @EnvironmentObject private var store: ManifestationStore
-    @Binding var selectedTab: AppTab
-    @State private var showingCreateWish = false
-    @State private var submittedManifestation: Wish?
+    let onCreate: () -> Void
     @State private var isActivatingCoin = false
     @State private var coinFlipAngle: Double = 0
 
@@ -43,24 +41,6 @@ struct HomeView: View {
             .navigationDestination(for: Wish.ID.self) { id in
                 WishDetailView(wishID: id)
             }
-            .fullScreenCover(isPresented: $showingCreateWish) {
-                NavigationStack {
-                    CreateWishView { manifestation in
-                        submittedManifestation = manifestation
-                    }
-                }
-            }
-            .alert("Manifestation placed", isPresented: showingSubmissionConfirmation) {
-                Button("View Feed") {
-                    selectedTab = .feed
-                    submittedManifestation = nil
-                }
-                Button("Stay Here", role: .cancel) {
-                    submittedManifestation = nil
-                }
-            } message: {
-                Text("Your manifestation is in motion. It now appears in your feed.")
-            }
         }
     }
 
@@ -79,7 +59,7 @@ struct HomeView: View {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.42) {
-            showingCreateWish = true
+            onCreate()
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.72) {
@@ -87,30 +67,21 @@ struct HomeView: View {
             isActivatingCoin = false
         }
     }
-
-    private var showingSubmissionConfirmation: Binding<Bool> {
-        Binding(
-            get: { submittedManifestation != nil },
-            set: { isPresented in
-                if !isPresented {
-                    submittedManifestation = nil
-                }
-            }
-        )
-    }
 }
 
 private struct HomeHeader: View {
     var body: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
             Text("TODAY, WISH GENTLY")
-                .font(.system(size: 12, weight: .semibold, design: .rounded))
+                .font(WWTypography.eyebrow)
+                .tracking(1.6)
                 .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
 
             Text("My Wishing Well")
-                .font(.system(size: 42, weight: .semibold, design: .rounded))
+                .font(WWTypography.display)
                 .foregroundStyle(WWColor.luminousText)
                 .fixedSize(horizontal: false, vertical: true)
+                .accessibilityAddTraits(.isHeader)
         }
         .padding(.top, AppSpacing.md)
         .padding(.trailing, 66)
@@ -262,7 +233,7 @@ private struct RippleRings: View {
 struct HomeView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
-            HomeView(selectedTab: .constant(.home))
+            HomeView(onCreate: {})
                 .environmentObject(ManifestationStore())
         }
     }

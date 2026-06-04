@@ -8,49 +8,32 @@ struct AtmosphericBackground: View {
             ZStack {
                 WWColor.deepWell
 
+                // Deep base wash: bright dawn at the very top, falling quickly into a rich, deep well.
                 LinearGradient(
                     stops: [
-                        .init(color: WWColor.dawnPeach.opacity(0.94), location: 0.00),
-                        .init(color: WWColor.mistLavender.opacity(0.86), location: 0.28),
-                        .init(color: WWColor.duskIndigo.opacity(0.96), location: 0.68),
+                        .init(color: WWColor.dawnPeach.opacity(0.64), location: 0.00),
+                        .init(color: WWColor.mistLavender.opacity(0.58), location: 0.20),
+                        .init(color: WWColor.duskIndigo.opacity(0.98), location: 0.50),
+                        .init(color: WWColor.deepWell, location: 0.76),
                         .init(color: WWColor.deepWell, location: 1.00)
                     ],
                     startPoint: .topLeading,
                     endPoint: .bottomTrailing
                 )
 
-                RadialGradient(
-                    stops: [
-                        .init(color: WWColor.gold.opacity(0.32), location: 0.00),
-                        .init(color: WWColor.dawnPeach.opacity(0.18), location: 0.36),
-                        .init(color: .clear, location: 1.00)
-                    ],
-                    center: UnitPoint(x: 0.12, y: 0.05),
-                    startRadius: 8,
-                    endRadius: max(size.width, size.height) * 0.72
-                )
-
-                RadialGradient(
-                    stops: [
-                        .init(color: WWColor.mint.opacity(0.22), location: 0.00),
-                        .init(color: WWColor.mistLavender.opacity(0.14), location: 0.42),
-                        .init(color: .clear, location: 1.00)
-                    ],
-                    center: UnitPoint(x: 0.86, y: 0.42),
-                    startRadius: 12,
-                    endRadius: max(size.width, size.height) * 0.78
-                )
-
+                // Bottom vignette: anchors the composition and keeps the deep well deep.
                 LinearGradient(
                     stops: [
-                        .init(color: .clear, location: 0.40),
-                        .init(color: WWColor.deepWell.opacity(0.32), location: 1.00)
+                        .init(color: .clear, location: 0.24),
+                        .init(color: WWColor.deepWell.opacity(0.62), location: 1.00)
                     ],
                     startPoint: .top,
                     endPoint: .bottom
                 )
             }
+            .saturation(1.22)
             .frame(width: size.width, height: size.height)
+            .clipped()
         }
         .background(WWColor.deepWell)
         .frame(maxWidth: .infinity, maxHeight: .infinity)

@@ -15,15 +15,17 @@ struct WellHeroView: View {
             VStack(alignment: .leading, spacing: AppSpacing.lg) {
                 RipplePortalView()
                     .frame(maxWidth: .infinity)
+                    .accessibilityHidden(true)
 
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
                     Text("YOUR WELL")
-                        .font(WWTypography.caption)
+                        .font(WWTypography.eyebrow)
+                        .tracking(1.4)
                         .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                         .textCase(.uppercase)
 
                     Text("A calm space to hold what matters before it becomes visible.")
-                        .font(.system(size: 24, weight: .medium, design: .rounded))
+                        .font(WWTypography.cardTitle)
                         .foregroundStyle(WWColor.luminousText)
                         .fixedSize(horizontal: false, vertical: true)
                 }
@@ -32,6 +34,7 @@ struct WellHeroView: View {
                     Image(systemName: "tray.full")
                         .font(.system(size: 15, weight: .medium))
                         .foregroundStyle(WWColor.luminousText.opacity(0.72))
+                        .accessibilityHidden(true)
 
                     Text("Past reflections")
                         .font(WWTypography.caption)
@@ -46,6 +49,7 @@ struct WellHeroView: View {
                     Image(systemName: "chevron.right")
                         .font(.system(size: 12, weight: .semibold))
                         .foregroundStyle(WWColor.luminousText.opacity(0.52))
+                        .accessibilityHidden(true)
                 }
                 .padding(.horizontal, AppSpacing.md)
                 .padding(.vertical, AppSpacing.sm)

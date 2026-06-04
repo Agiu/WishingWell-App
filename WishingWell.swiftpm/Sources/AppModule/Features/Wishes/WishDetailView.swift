@@ -161,6 +161,7 @@ private struct StatusHeader: View {
                     Circle()
                         .stroke(WWColor.glassStroke, lineWidth: 1)
                 )
+                .accessibilityHidden(true)
 
             VStack(alignment: .leading, spacing: 3) {
                 Text(wish.authorName)
@@ -211,7 +212,7 @@ private struct CommentInputView: View {
                     .foregroundStyle(WWColor.luminousText)
 
                 Text("Keep it supportive, specific, and easy to receive.")
-                    .font(WWTypography.body)
+                    .font(WWTypography.lead)
                     .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
 
                 ZStack(alignment: .topLeading) {
@@ -221,6 +222,8 @@ private struct CommentInputView: View {
                         .scrollContentBackground(.hidden)
                         .foregroundStyle(WWColor.deepWell)
                         .padding(AppSpacing.sm)
+                        .accessibilityLabel("Affirming response")
+                        .accessibilityHint("Write a supportive note for this manifestation")
 
                     if trimmedMessage.isEmpty {
                         Text("I believe this is already beginning...")
@@ -261,7 +264,7 @@ private struct CommentInputView: View {
             Spacer()
 
             Text("Comment")
-                .font(.system(size: 15, weight: .semibold, design: .rounded))
+                .font(WWTypography.barTitle)
                 .foregroundStyle(WWColor.luminousText)
 
             Spacer()

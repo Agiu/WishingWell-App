@@ -25,9 +25,10 @@ struct SettingsView: View {
                         Text("Settings")
                             .font(WWTypography.largeTitle)
                             .foregroundStyle(WWColor.luminousText)
+                            .accessibilityAddTraits(.isHeader)
 
                         Text("Small adjustments for how Wishing Well supports your rhythm.")
-                            .font(WWTypography.body)
+                            .font(WWTypography.lead)
                             .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                     }
 

@@ -22,6 +22,7 @@ struct ReflectionsView: View {
                     Text("Ripples")
                         .font(WWTypography.largeTitle)
                         .foregroundStyle(WWColor.luminousText)
+                        .accessibilityAddTraits(.isHeader)
 
                     ForEach(reflections, id: \.title) { reflection in
                         VStack(alignment: .leading, spacing: AppSpacing.sm) {

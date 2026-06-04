@@ -2,6 +2,7 @@ import SwiftUI
 
 struct FeedView: View {
     @EnvironmentObject private var store: ManifestationStore
+    var onCreate: () -> Void = {}
 
     var body: some View {
         TopActionsContainer {
@@ -12,6 +13,8 @@ struct FeedView: View {
                 ScrollView {
                     LazyVStack(spacing: AppSpacing.md) {
                         FeedHeader()
+
+                        FeedComposerButton(action: onCreate)
 
                         ForEach(store.socialFeed) { wish in
                             NavigationLink(value: wish.id) {
@@ -41,14 +44,51 @@ private struct FeedHeader: View {
             Text("Feed")
                 .font(WWTypography.largeTitle)
                 .foregroundStyle(WWColor.luminousText)
+                .accessibilityAddTraits(.isHeader)
 
             Text("Wishes from your circle, held softly.")
-                .font(WWTypography.body)
+                .font(WWTypography.lead)
                 .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.trailing, 86)
         .padding(.bottom, AppSpacing.xs)
+    }
+}
+
+/// The always-present way to start a manifestation from the social home, styled
+/// like a composer so creating reads as the core action, not a hidden one.
+private struct FeedComposerButton: View {
+    let action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: AppSpacing.sm) {
+                Image(systemName: "sparkles")
+                    .font(.system(size: 18, weight: .medium))
+                    .foregroundStyle(WWColor.gold)
+
+                Text("Cast a wish...")
+                    .font(WWTypography.headline)
+                    .foregroundStyle(WWColor.luminousText.opacity(0.82))
+
+                Spacer()
+
+                Image(systemName: "plus")
+                    .font(.system(size: 14, weight: .bold))
+                    .foregroundStyle(WWColor.deepWell)
+                    .frame(width: 30, height: 30)
+                    .background(WWColor.warmIvory, in: Circle())
+            }
+            .padding(.vertical, AppSpacing.sm)
+            .padding(.leading, AppSpacing.md)
+            .padding(.trailing, AppSpacing.sm)
+            .frame(maxWidth: .infinity)
+            .glassPanel(radius: AppRadius.pill, tintOpacity: 0.16, shadowOpacity: 0.12)
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel("Cast a wish")
+        .accessibilityHint("Create a new manifestation")
     }
 }
 
@@ -79,6 +119,18 @@ private struct FeedManifestationCard: View {
             .padding(AppSpacing.md)
         }
         .glassPanel(radius: AppRadius.large, tintOpacity: AppOpacity.glassLight, shadowOpacity: 0.14)
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityDescription)
+        .accessibilityHint("Opens this manifestation")
+    }
+
+    /// One clean spoken summary for the whole card, so VoiceOver does not read the
+    /// "Affirm" / "Comment" affordance labels as if they were separate controls.
+    private var accessibilityDescription: String {
+        let notes = wish.comments.isEmpty
+            ? "No supportive notes yet"
+            : "\(wish.comments.count) supportive note\(wish.comments.count == 1 ? "" : "s")"
+        return "\(wish.authorName)'s manifestation: \(wish.intention). Seeking \(wish.feedbackType.rawValue). \(notes)."
     }
 
     private var header: some View {
@@ -125,7 +177,7 @@ private struct FeedManifestationCard: View {
                     .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
 
                 Text(wish.intention)
-                    .font(.system(size: 25, weight: .semibold, design: .rounded))
+                    .font(WWTypography.cardTitle)
                     .foregroundStyle(WWColor.luminousText)
                     .fixedSize(horizontal: false, vertical: true)
                     .lineLimit(6)
