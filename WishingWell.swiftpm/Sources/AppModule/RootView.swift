@@ -32,7 +32,7 @@ private struct AppTabView: View {
                     FloatingTabBar(selectedTab: $selectedTab)
                         .padding(.horizontal, 44)
                         .padding(.top, AppSpacing.sm)
-                        .padding(.bottom, AppSpacing.md)
+                        .padding(.bottom, AppSpacing.sm)
                         .background(Color.clear)
                 }
         }
