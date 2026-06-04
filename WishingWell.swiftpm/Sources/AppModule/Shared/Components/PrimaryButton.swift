@@ -8,7 +8,7 @@ struct PrimaryButton: View {
     var body: some View {
         Button(action: action) {
             Label(title, systemImage: systemImage)
-                .font(.system(size: 19, weight: .semibold, design: .rounded))
+                .font(.system(.title3, design: .rounded).weight(.semibold))
                 .foregroundStyle(WWColor.deepWell)
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 18)
