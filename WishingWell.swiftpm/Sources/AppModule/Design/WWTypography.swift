@@ -19,8 +19,8 @@ enum WWTypography {
     static let largeTitle = Font.system(.largeTitle, design: .rounded).weight(.bold)
     /// Section title (~22–24).
     static let title = Font.system(.title2, design: .rounded).weight(.bold)
-    /// Feed card intention and hero statements — a large headline inside a card (~26–28).
-    static let cardTitle = Font.system(.title, design: .rounded).weight(.semibold)
+    /// Feed card intention and hero statements — a headline inside a card (~20).
+    static let cardTitle = Font.system(.title3, design: .rounded).weight(.semibold)
     /// Lead body for hero subtitles and taglines (~18–20).
     static let lead = Font.system(.title3, design: .rounded).weight(.regular)
     /// Item and section labels (~17).

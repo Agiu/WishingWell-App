@@ -26,6 +26,18 @@ enum ManifestationFeedbackType: String, Codable, CaseIterable, Identifiable {
 
     var id: String { rawValue }
 
+    /// Compact label for tight spots like the selector pill.
+    var shortName: String {
+        switch self {
+        case .advice:
+            return "Advice"
+        case .emotionalSupport:
+            return "Emotional"
+        case .discourse:
+            return "Discourse"
+        }
+    }
+
     var description: String {
         switch self {
         case .advice:

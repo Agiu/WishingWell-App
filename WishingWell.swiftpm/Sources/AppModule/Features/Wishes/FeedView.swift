@@ -206,8 +206,7 @@ private struct FeedManifestationCard: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(wish.authorName)
-                    .font(WWTypography.lead)
-                    .fontWeight(.semibold)
+                    .font(WWTypography.headline)
                     .foregroundStyle(WWColor.luminousText)
                 Text(wish.authorHandle)
                     .font(WWTypography.caption)

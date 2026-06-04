@@ -125,7 +125,7 @@ struct CreateWishView: View {
             CompactSelectorRow(
                 icon: "heart.text.square",
                 label: "Support",
-                value: feedbackType.rawValue,
+                value: feedbackType.shortName,
                 caption: feedbackType.description
             ) {
                 ForEach(ManifestationFeedbackType.allCases) { option in
@@ -234,7 +234,7 @@ private struct CompactSelectorRow<MenuContent: View>: View {
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(label)
-                        .font(WWTypography.headline)
+                        .font(WWTypography.barTitle)
                         .foregroundStyle(WWColor.luminousText)
                     Text(caption)
                         .font(WWTypography.caption)
@@ -249,6 +249,7 @@ private struct CompactSelectorRow<MenuContent: View>: View {
                         .font(WWTypography.caption)
                         .fontWeight(.semibold)
                         .foregroundStyle(WWColor.luminousText)
+                        .lineLimit(1)
                     Image(systemName: "chevron.up.chevron.down")
                         .font(.system(size: 10, weight: .semibold))
                         .foregroundStyle(WWColor.luminousText.opacity(0.6))
