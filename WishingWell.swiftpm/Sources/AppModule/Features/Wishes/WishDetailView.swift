@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct WishDetailView: View {
     @EnvironmentObject private var store: ManifestationStore
@@ -6,6 +7,7 @@ struct WishDetailView: View {
 
     @State private var showingCommentSheet = false
     @State private var showingCommentConfirmation = false
+    @State private var heartPop = false
 
     var body: some View {
         ZStack {
@@ -29,7 +31,7 @@ struct WishDetailView: View {
                                     .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                             }
 
-                            supportiveActions
+                            supportiveActions(wish: wish)
 
                             commentsSection(wish: wish)
                         }
@@ -68,11 +70,17 @@ struct WishDetailView: View {
         }
     }
 
-    private var supportiveActions: some View {
+    private func supportiveActions(wish: Wish) -> some View {
         VStack(alignment: .leading, spacing: AppSpacing.md) {
             Text("Support this manifestation")
                 .font(WWTypography.title)
                 .foregroundStyle(WWColor.luminousText)
+
+            if wish.affirmationCount > 0 {
+                Text("\(wish.affirmationCount) \(wish.affirmationCount == 1 ? "person has" : "people have") affirmed this.")
+                    .font(WWTypography.caption)
+                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+            }
 
             HStack(spacing: AppSpacing.sm) {
                 Button {
@@ -96,19 +104,32 @@ struct WishDetailView: View {
                 }
                 .buttonStyle(.plain)
 
-                Button {} label: {
-                    Image(systemName: "heart")
+                Button {
+                    UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+                    heartPop = true
+                    withAnimation(.spring(response: 0.3, dampingFraction: 0.62)) {
+                        store.toggleAffirmation(for: wishID)
+                    }
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+                        heartPop = false
+                    }
+                } label: {
+                    Image(systemName: wish.isAffirmed ? "heart.fill" : "heart")
                         .font(.system(size: 20, weight: .semibold))
                         .foregroundStyle(WWColor.rose)
+                        .scaleEffect(heartPop ? 1.25 : 1.0)
+                        .animation(.spring(response: 0.3, dampingFraction: 0.5), value: heartPop)
                         .frame(width: 52, height: 52)
-                        .background(WWColor.rose.opacity(AppOpacity.glassMedium), in: Circle())
+                        .background(WWColor.rose.opacity(wish.isAffirmed ? 0.30 : AppOpacity.glassMedium), in: Circle())
                         .overlay(
                             Circle()
                                 .stroke(WWColor.glassStroke, lineWidth: 1)
                         )
                 }
                 .buttonStyle(.plain)
-                .accessibilityLabel("Affirm")
+                .accessibilityLabel(wish.isAffirmed ? "Affirmed" : "Affirm")
+                .accessibilityValue("\(wish.affirmationCount) affirmation\(wish.affirmationCount == 1 ? "" : "s")")
+                .accessibilityAddTraits(wish.isAffirmed ? [.isButton, .isSelected] : .isButton)
             }
         }
         .padding(AppSpacing.md)

@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct FeedView: View {
     @EnvironmentObject private var store: ManifestationStore
@@ -17,10 +18,7 @@ struct FeedView: View {
                         FeedComposerButton(action: onCreate)
 
                         ForEach(store.socialFeed) { wish in
-                            NavigationLink(value: wish.id) {
-                                FeedManifestationCard(wish: wish)
-                            }
-                            .buttonStyle(.plain)
+                            FeedManifestationCard(wish: wish)
                         }
                     }
                     .padding(AppSpacing.lg)
@@ -92,40 +90,102 @@ private struct FeedComposerButton: View {
     }
 }
 
+/// A live affirm toggle: a heart that fills and pops, with a running count.
+struct AffirmButton: View {
+    let isAffirmed: Bool
+    let count: Int
+    let action: () -> Void
+
+    @State private var pop = false
+
+    var body: some View {
+        Button {
+            UIImpactFeedbackGenerator(style: .soft).impactOccurred()
+            pop = true
+            withAnimation(.spring(response: 0.3, dampingFraction: 0.62)) {
+                action()
+            }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.32) {
+                pop = false
+            }
+        } label: {
+            HStack(spacing: 6) {
+                Image(systemName: isAffirmed ? "heart.fill" : "heart")
+                    .font(.system(size: 16, weight: .regular))
+                    .foregroundStyle(isAffirmed ? WWColor.rose : WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                    .scaleEffect(pop ? 1.3 : 1.0)
+                    .animation(.spring(response: 0.3, dampingFraction: 0.5), value: pop)
+                Text("\(count)")
+                    .font(WWTypography.caption)
+                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+            }
+            .contentShape(Rectangle())
+        }
+        .buttonStyle(.plain)
+        .accessibilityLabel(isAffirmed ? "Affirmed" : "Affirm")
+        .accessibilityValue("\(count) affirmation\(count == 1 ? "" : "s")")
+        .accessibilityAddTraits(isAffirmed ? [.isButton, .isSelected] : .isButton)
+        .accessibilityHint("Sends quiet support to this manifestation")
+    }
+}
+
 private struct FeedManifestationCard: View {
+    @EnvironmentObject private var store: ManifestationStore
     let wish: Wish
 
     var body: some View {
         VStack(alignment: .leading, spacing: 0) {
-            header
-                .padding(AppSpacing.md)
-
-            visualPanel
-
-            VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                HStack(spacing: 10) {
-                    Label("Affirm", systemImage: "heart")
-                    Label("Comment", systemImage: "bubble.right")
-                    Spacer()
-                    Image(systemName: wish.visibility == .privateOnly ? "lock" : "person.2")
+            // Only the content area navigates, so the action bar's buttons stay live.
+            NavigationLink(value: wish.id) {
+                VStack(alignment: .leading, spacing: 0) {
+                    header
+                        .padding(AppSpacing.md)
+                    visualPanel
                 }
-                .font(WWTypography.caption)
-                .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
-
-                Text(wish.comments.isEmpty ? "Be the first to leave a supportive note." : "\(wish.comments.count) supportive note\(wish.comments.count == 1 ? "" : "s")")
-                    .font(WWTypography.caption)
-                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                .contentShape(Rectangle())
             }
-            .padding(AppSpacing.md)
+            .buttonStyle(.plain)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(accessibilityDescription)
+            .accessibilityHint("Opens this manifestation")
+
+            actionBar
+                .padding(AppSpacing.md)
         }
         .glassPanel(radius: AppRadius.large, tintOpacity: AppOpacity.glassLight, shadowOpacity: 0.14)
-        .accessibilityElement(children: .ignore)
-        .accessibilityLabel(accessibilityDescription)
-        .accessibilityHint("Opens this manifestation")
     }
 
-    /// One clean spoken summary for the whole card, so VoiceOver does not read the
-    /// "Affirm" / "Comment" affordance labels as if they were separate controls.
+    private var actionBar: some View {
+        HStack(spacing: AppSpacing.lg) {
+            AffirmButton(isAffirmed: wish.isAffirmed, count: wish.affirmationCount) {
+                store.toggleAffirmation(for: wish.id)
+            }
+
+            NavigationLink(value: wish.id) {
+                HStack(spacing: 6) {
+                    Image(systemName: "bubble.right")
+                        .font(.system(size: 15, weight: .regular))
+                    Text("\(wish.comments.count)")
+                        .font(WWTypography.caption)
+                }
+                .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+            }
+            .buttonStyle(.plain)
+            .accessibilityLabel("Comment")
+            .accessibilityValue(wish.comments.isEmpty ? "No responses yet" : "\(wish.comments.count) response\(wish.comments.count == 1 ? "" : "s")")
+            .accessibilityHint("Opens this manifestation to respond")
+
+            Spacer()
+
+            Image(systemName: wish.visibility == .privateOnly ? "lock" : "person.2")
+                .font(.system(size: 14, weight: .regular))
+                .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                .accessibilityHidden(true)
+        }
+    }
+
+    /// One clean spoken summary for the navigable content, so VoiceOver hears the
+    /// post as a single "opens manifestation" element separate from the action bar.
     private var accessibilityDescription: String {
         let notes = wish.comments.isEmpty
             ? "No supportive notes yet"

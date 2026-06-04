@@ -50,6 +50,18 @@ final class ManifestationStore: ObservableObject {
         }
     }
 
+    func toggleAffirmation(for manifestationID: Wish.ID) {
+        updateManifestation(with: manifestationID) { manifestation in
+            if manifestation.isAffirmed {
+                manifestation.isAffirmed = false
+                manifestation.affirmationCount = max(0, manifestation.affirmationCount - 1)
+            } else {
+                manifestation.isAffirmed = true
+                manifestation.affirmationCount += 1
+            }
+        }
+    }
+
     private var shareableMine: [Wish] {
         myManifestations.filter { $0.visibility != .privateOnly }
     }

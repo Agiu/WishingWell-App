@@ -75,6 +75,8 @@ struct Wish: Identifiable, Hashable {
     var isMine: Bool
     var feedbackType: ManifestationFeedbackType
     var comments: [ManifestationComment]
+    var affirmationCount: Int
+    var isAffirmed: Bool
 
     init(
         id: UUID = UUID(),
@@ -87,7 +89,9 @@ struct Wish: Identifiable, Hashable {
         authorHandle: String = "@mywell",
         isMine: Bool = true,
         feedbackType: ManifestationFeedbackType = .emotionalSupport,
-        comments: [ManifestationComment] = []
+        comments: [ManifestationComment] = [],
+        affirmationCount: Int = 0,
+        isAffirmed: Bool = false
     ) {
         self.id = id
         self.title = title
@@ -100,6 +104,8 @@ struct Wish: Identifiable, Hashable {
         self.isMine = isMine
         self.feedbackType = feedbackType
         self.comments = comments
+        self.affirmationCount = affirmationCount
+        self.isAffirmed = isAffirmed
     }
 }
 
@@ -140,7 +146,9 @@ extension Wish {
             feedbackType: .emotionalSupport,
             comments: [
                 ManifestationComment(authorName: "Ari", message: "This feels so grounded. Cheering for the calm launch.")
-            ]
+            ],
+            affirmationCount: 12,
+            isAffirmed: true
         ),
         Wish(
             title: "Creative mornings",
@@ -150,7 +158,8 @@ extension Wish {
             authorName: "Kai",
             authorHandle: "@softlaunch",
             isMine: false,
-            feedbackType: .advice
+            feedbackType: .advice,
+            affirmationCount: 5
         ),
         Wish(
             title: "Trust the next step",
@@ -160,7 +169,8 @@ extension Wish {
             authorName: "Noor",
             authorHandle: "@brightpath",
             isMine: false,
-            feedbackType: .discourse
+            feedbackType: .discourse,
+            affirmationCount: 28
         )
     ]
 }
