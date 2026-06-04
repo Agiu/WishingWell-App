@@ -19,6 +19,25 @@ enum ManifestationVisibility: String, CaseIterable, Identifiable {
     }
 }
 
+enum ManifestationFeedbackType: String, Codable, CaseIterable, Identifiable {
+    case advice = "Advice"
+    case emotionalSupport = "Emotional Support"
+    case discourse = "Discourse"
+
+    var id: String { rawValue }
+
+    var description: String {
+        switch self {
+        case .advice:
+            return "Help me think through next steps."
+        case .emotionalSupport:
+            return "Encourage me and affirm this intention."
+        case .discourse:
+            return "Explore this with me more deeply."
+        }
+    }
+}
+
 struct ManifestationComment: Identifiable, Hashable {
     let id: UUID
     var authorName: String
@@ -54,7 +73,7 @@ struct Wish: Identifiable, Hashable {
     var authorName: String
     var authorHandle: String
     var isMine: Bool
-    var prompt: String?
+    var feedbackType: ManifestationFeedbackType
     var comments: [ManifestationComment]
 
     init(
@@ -67,7 +86,7 @@ struct Wish: Identifiable, Hashable {
         authorName: String = "Malik",
         authorHandle: String = "@mywell",
         isMine: Bool = true,
-        prompt: String? = nil,
+        feedbackType: ManifestationFeedbackType = .emotionalSupport,
         comments: [ManifestationComment] = []
     ) {
         self.id = id
@@ -79,7 +98,7 @@ struct Wish: Identifiable, Hashable {
         self.authorName = authorName
         self.authorHandle = authorHandle
         self.isMine = isMine
-        self.prompt = prompt
+        self.feedbackType = feedbackType
         self.comments = comments
     }
 }
@@ -91,21 +110,21 @@ extension Wish {
             intention: "Shape a calm, useful app that makes wish tracking feel intentional.",
             status: .rippling,
             visibility: .privateOnly,
-            prompt: "I will..."
+            feedbackType: .advice
         ),
         Wish(
             title: "Make space for focus",
             intention: "Protect three quiet blocks this week for creative work.",
             status: .planted,
             visibility: .closeCircle,
-            prompt: "I want..."
+            feedbackType: .emotionalSupport
         ),
         Wish(
             title: "Celebrate small proof",
             intention: "Notice the tiny signs that something is moving.",
             status: .blooming,
             visibility: .everyone,
-            prompt: "Next month, I'm going to..."
+            feedbackType: .discourse
         )
     ]
 
@@ -118,7 +137,7 @@ extension Wish {
             authorName: "Maya",
             authorHandle: "@moonwell",
             isMine: false,
-            prompt: "I will...",
+            feedbackType: .emotionalSupport,
             comments: [
                 ManifestationComment(authorName: "Ari", message: "This feels so grounded. Cheering for the calm launch.")
             ]
@@ -131,7 +150,7 @@ extension Wish {
             authorName: "Kai",
             authorHandle: "@softlaunch",
             isMine: false,
-            prompt: "Next month, I'm going to..."
+            feedbackType: .advice
         ),
         Wish(
             title: "Trust the next step",
@@ -141,7 +160,7 @@ extension Wish {
             authorName: "Noor",
             authorHandle: "@brightpath",
             isMine: false,
-            prompt: "I want..."
+            feedbackType: .discourse
         )
     ]
 }

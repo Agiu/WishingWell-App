@@ -19,34 +19,18 @@ struct HomeView: View {
                     VStack(alignment: .leading, spacing: AppSpacing.lg) {
                         HomeHeader()
 
-                        WellHeroView()
+                        NavigationLink {
+                            PastReflectionsView()
+                        } label: {
+                            WellHeroView(reflectionCount: store.personalFeed.count)
+                        }
+                        .buttonStyle(.plain)
 
                         ManifestationCoinEntry(
                             isActivating: isActivatingCoin,
                             flipAngle: coinFlipAngle,
                             action: activateManifestationCoin
                         )
-
-                        VStack(alignment: .leading, spacing: 14) {
-                            HStack(alignment: .lastTextBaseline) {
-                                Text("Recent reflections")
-                                    .font(WWTypography.title)
-                                    .foregroundStyle(WWColor.luminousText)
-
-                                Spacer()
-
-                                Text("\(store.personalFeed.count)")
-                                    .font(WWTypography.caption)
-                                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
-                            }
-
-                            ForEach(store.personalFeed) { wish in
-                                NavigationLink(value: wish.id) {
-                                    WishCard(wish: wish)
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
                     }
                     .padding(.horizontal, AppSpacing.lg)
                     .padding(.top, AppSpacing.md)
@@ -127,11 +111,6 @@ private struct HomeHeader: View {
                 .font(.system(size: 42, weight: .semibold, design: .rounded))
                 .foregroundStyle(WWColor.luminousText)
                 .fixedSize(horizontal: false, vertical: true)
-
-            Text("A softer place to name what matters, then let it move at its own pace.")
-                .font(.system(size: 17, weight: .regular))
-                .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
-                .fixedSize(horizontal: false, vertical: true)
         }
         .padding(.top, AppSpacing.md)
         .padding(.trailing, 66)
@@ -145,17 +124,19 @@ private struct ManifestationCoinEntry: View {
 
     var body: some View {
         Button(action: action) {
-            VStack(spacing: AppSpacing.sm) {
+            VStack(spacing: 0) {
                 ManifestationCoin(isActivating: isActivating, flipAngle: flipAngle)
                     .frame(width: 126, height: 126)
 
-                Text("Manifest something exciting")
+                Text("Begin a manifestation")
                     .font(WWTypography.headline)
                     .foregroundStyle(WWColor.luminousText)
+                    .padding(.top, AppSpacing.md)
 
-                Text("Freeform, prompted, private, or shared.")
+                Text("Tap the coin to enter the ritual.")
                     .font(WWTypography.caption)
                     .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                    .padding(.top, AppSpacing.xs)
             }
             .multilineTextAlignment(.center)
             .frame(maxWidth: .infinity)
@@ -164,7 +145,7 @@ private struct ManifestationCoinEntry: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .accessibilityLabel("Manifest something exciting")
+        .accessibilityLabel("Begin a manifestation")
         .accessibilityHint("Opens the manifestation creation flow")
     }
 }

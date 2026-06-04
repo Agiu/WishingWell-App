@@ -24,11 +24,9 @@ struct WishDetailView: View {
                                     .foregroundStyle(WWColor.luminousText)
                                     .fixedSize(horizontal: false, vertical: true)
 
-                                if let prompt = wish.prompt {
-                                    Text(prompt)
-                                        .font(WWTypography.caption)
-                                        .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
-                                }
+                                Text(wish.feedbackType.rawValue)
+                                    .font(WWTypography.caption)
+                                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                             }
 
                             supportiveActions

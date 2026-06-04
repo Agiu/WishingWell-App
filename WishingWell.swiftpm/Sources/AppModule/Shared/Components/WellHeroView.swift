@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct WellHeroView: View {
+    let reflectionCount: Int
+
+    init(reflectionCount: Int = 0) {
+        self.reflectionCount = reflectionCount
+    }
+
     var body: some View {
         ZStack {
             Color.clear
@@ -11,21 +17,48 @@ struct WellHeroView: View {
                     .frame(maxWidth: .infinity)
 
                 VStack(alignment: .leading, spacing: AppSpacing.sm) {
-                    Text("A quiet place for what wants to become real.")
+                    Text("YOUR WELL")
                         .font(WWTypography.caption)
                         .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
                         .textCase(.uppercase)
 
-                    Text("What are you ready to place into motion?")
-                        .font(.system(size: 28, weight: .semibold, design: .rounded))
+                    Text("A calm space to hold what matters before it becomes visible.")
+                        .font(.system(size: 24, weight: .medium, design: .rounded))
                         .foregroundStyle(WWColor.luminousText)
                         .fixedSize(horizontal: false, vertical: true)
+                }
+
+                HStack(spacing: AppSpacing.sm) {
+                    Image(systemName: "tray.full")
+                        .font(.system(size: 15, weight: .medium))
+                        .foregroundStyle(WWColor.luminousText.opacity(0.72))
+
+                    Text("Past reflections")
+                        .font(WWTypography.caption)
+                        .foregroundStyle(WWColor.luminousText.opacity(0.82))
+
+                    Spacer()
+
+                    Text("\(reflectionCount)")
+                        .font(WWTypography.caption)
+                        .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+
+                    Image(systemName: "chevron.right")
+                        .font(.system(size: 12, weight: .semibold))
+                        .foregroundStyle(WWColor.luminousText.opacity(0.52))
+                }
+                .padding(.horizontal, AppSpacing.md)
+                .padding(.vertical, AppSpacing.sm)
+                .background(WWColor.warmIvory.opacity(0.10), in: Capsule())
+                .overlay {
+                    Capsule()
+                        .stroke(.white.opacity(0.16), lineWidth: 0.8)
                 }
             }
             .padding(AppSpacing.lg)
         }
         .frame(maxWidth: .infinity)
-        .frame(minHeight: 292)
+        .frame(minHeight: 268)
     }
 }
 

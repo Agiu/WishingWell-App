@@ -8,14 +8,8 @@ struct CreateWishView: View {
     let onSubmit: (Wish) -> Void
 
     @State private var intention = ""
-    @State private var selectedPrompt = "I want..."
+    @State private var feedbackType: ManifestationFeedbackType = .emotionalSupport
     @State private var visibility: ManifestationVisibility = .closeCircle
-
-    private let prompts = [
-        "I want...",
-        "I will...",
-        "Next month, I'm going to..."
-    ]
 
     var body: some View {
         ZStack {
@@ -26,7 +20,7 @@ struct CreateWishView: View {
                 VStack(alignment: .leading, spacing: AppSpacing.lg) {
                     creationTopBar
                     header
-                    promptSuggestions
+                    feedbackIntentSection
                     inputArea
                     visibilitySelector
 
@@ -71,42 +65,60 @@ struct CreateWishView: View {
                 .font(WWTypography.largeTitle)
                 .foregroundStyle(WWColor.luminousText)
 
-            Text("Start with a prompt or write freely. Keep it honest and kind to your future self.")
+            Text("Write freely, then choose the kind of response that would feel most helpful.")
                 .font(WWTypography.body)
                 .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
         }
     }
 
-    private var promptSuggestions: some View {
+    private var feedbackIntentSection: some View {
         VStack(alignment: .leading, spacing: AppSpacing.sm) {
-            Text("Prompts")
+            Text("What kind of feedback do you want?")
                 .font(WWTypography.headline)
                 .foregroundStyle(WWColor.luminousText)
 
-            FlowLayout(spacing: 8) {
-                ForEach(prompts, id: \.self) { prompt in
+            VStack(spacing: AppSpacing.sm) {
+                ForEach(ManifestationFeedbackType.allCases) { option in
                     Button {
-                        selectedPrompt = prompt
-                        if trimmedIntention.isEmpty {
-                            intention = prompt + " "
-                        }
-                        isInputFocused = true
+                        feedbackType = option
                     } label: {
-                        Text(prompt)
-                            .font(WWTypography.caption)
-                            .foregroundStyle(selectedPrompt == prompt ? WWColor.luminousText : WWColor.luminousText.opacity(AppOpacity.secondaryText))
-                            .padding(.horizontal, AppSpacing.md)
-                            .padding(.vertical, 8)
-                            .background(
-                                selectedPrompt == prompt ? WWColor.deepWell.opacity(0.56) : WWColor.warmIvory.opacity(AppOpacity.glassLight),
-                                in: Capsule()
-                            )
-                            .overlay(
-                                Capsule()
-                                    .stroke(WWColor.glassStroke, lineWidth: 1)
-                            )
+                        HStack(spacing: AppSpacing.sm) {
+                            VStack(alignment: .leading, spacing: 3) {
+                                Text(option.rawValue)
+                                    .font(WWTypography.headline)
+                                    .foregroundStyle(WWColor.luminousText)
+
+                                Text(option.description)
+                                    .font(WWTypography.caption)
+                                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                            }
+
+                            Spacer()
+
+                            Image(systemName: feedbackType == option ? "checkmark.circle.fill" : "circle")
+                                .font(.system(size: 18, weight: .medium))
+                                .foregroundStyle(feedbackType == option ? WWColor.gold : WWColor.luminousText.opacity(0.48))
+                        }
+                        .padding(.horizontal, AppSpacing.md)
+                        .padding(.vertical, AppSpacing.sm)
+                        .appGlassSurface(
+                            radius: AppRadius.medium,
+                            fillOpacity: feedbackType == option ? 0.18 : 0.11,
+                            strokeOpacity: feedbackType == option ? 0.28 : 0.16,
+                            shadowOpacity: 0.05,
+                            shadowRadius: 8,
+                            shadowY: 3
+                        )
+                        .contentShape(
+                            RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                        )
                     }
                     .buttonStyle(.plain)
+                    .accessibilityElement(children: .combine)
+                    .accessibilityAddTraits(
+                        feedbackType == option ? [.isButton, .isSelected] : .isButton
+                    )
+                    .accessibilityLabel("\(option.rawValue). \(option.description)")
                 }
             }
         }
@@ -190,23 +202,11 @@ struct CreateWishView: View {
     private func submit() {
         let manifestation = store.addManifestation(
             intention: trimmedIntention,
-            prompt: selectedPrompt,
+            feedbackType: feedbackType,
             visibility: visibility
         )
         dismiss()
         onSubmit(manifestation)
-    }
-}
-
-private struct FlowLayout<Content: View>: View {
-    let spacing: CGFloat
-    @ViewBuilder let content: Content
-
-    var body: some View {
-        HStack(spacing: spacing) {
-            content
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 }
 

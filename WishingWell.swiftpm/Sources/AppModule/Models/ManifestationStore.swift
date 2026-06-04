@@ -22,17 +22,17 @@ final class ManifestationStore: ObservableObject {
 
     func addManifestation(
         intention: String,
-        prompt: String?,
+        feedbackType: ManifestationFeedbackType,
         visibility: ManifestationVisibility
     ) -> Wish {
         let trimmed = intention.trimmingCharacters(in: .whitespacesAndNewlines)
-        let title = Self.title(for: trimmed, prompt: prompt)
+        let title = Self.title(for: trimmed)
         let manifestation = Wish(
             title: title,
             intention: trimmed,
             status: .planted,
             visibility: visibility,
-            prompt: prompt
+            feedbackType: feedbackType
         )
 
         myManifestations.insert(manifestation, at: 0)
@@ -65,7 +65,7 @@ final class ManifestationStore: ObservableObject {
         }
     }
 
-    private static func title(for intention: String, prompt: String?) -> String {
+    private static func title(for intention: String) -> String {
         let cleaned = intention
             .replacingOccurrences(of: "\n", with: " ")
             .trimmingCharacters(in: .whitespacesAndNewlines)

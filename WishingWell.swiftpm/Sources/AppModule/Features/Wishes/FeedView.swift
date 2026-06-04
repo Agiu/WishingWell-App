@@ -120,11 +120,9 @@ private struct FeedManifestationCard: View {
                 .frame(height: 250)
 
             VStack(alignment: .leading, spacing: 12) {
-                if let prompt = wish.prompt {
-                    Text(prompt)
-                        .font(WWTypography.caption)
-                        .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
-                }
+                Text(wish.feedbackType.rawValue)
+                    .font(WWTypography.caption)
+                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
 
                 Text(wish.intention)
                     .font(.system(size: 25, weight: .semibold, design: .rounded))
