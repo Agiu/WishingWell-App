@@ -104,23 +104,23 @@ private struct FloatingTabBar: View {
                         selectedTab = tab
                     }
                 } label: {
-                    VStack(spacing: 4) {
+                    VStack(spacing: 5) {
                         Image(systemName: tab.symbolName)
-                            .font(.system(size: 17, weight: .regular))
+                            .font(.system(size: 20, weight: .medium))
                             .symbolRenderingMode(.hierarchical)
                         Text(tab.title)
-                            .font(.system(size: 12, weight: .medium, design: .rounded))
+                            .font(.system(size: 14, weight: .semibold, design: .rounded))
                     }
-                    .foregroundStyle(selectedTab == tab ? WWColor.deepWell.opacity(0.84) : WWColor.deepWell.opacity(0.52))
+                    .foregroundStyle(selectedTab == tab ? WWColor.luminousText : WWColor.luminousText.opacity(0.62))
                     .frame(maxWidth: .infinity)
-                    .frame(height: 52)
+                    .frame(height: 56)
                     .background {
                         if selectedTab == tab {
                             Capsule(style: .continuous)
-                                .fill(.white.opacity(0.40))
+                                .fill(.white.opacity(0.18))
                                 .overlay {
                                     Capsule(style: .continuous)
-                                        .stroke(.white.opacity(0.22), lineWidth: 0.7)
+                                        .stroke(.white.opacity(0.30), lineWidth: 0.8)
                                 }
                         }
                     }
@@ -133,15 +133,15 @@ private struct FloatingTabBar: View {
             }
         }
         .padding(6)
-        .frame(height: 64)
-        .background(.regularMaterial)
-        .background(WWColor.warmIvory.opacity(0.18))
+        .frame(height: 72)
+        .background(WWColor.deepWell.opacity(0.5))
+        .background(.ultraThinMaterial)
         .clipShape(Capsule())
         .overlay {
             Capsule()
-                .stroke(.white.opacity(0.28), lineWidth: 0.8)
+                .stroke(.white.opacity(0.22), lineWidth: 0.8)
         }
-        .shadow(color: .black.opacity(0.11), radius: 18, y: 8)
+        .shadow(color: .black.opacity(0.24), radius: 20, y: 10)
     }
 }
 

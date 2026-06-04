@@ -46,7 +46,7 @@ private struct FeedHeader: View {
 
             Text("Wishes from your circle, held softly.")
                 .font(WWTypography.lead)
-                .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                .foregroundStyle(WWColor.luminousText.opacity(0.78))
         }
         .frame(maxWidth: .infinity, alignment: .leading)
         .padding(.trailing, 86)
@@ -206,11 +206,12 @@ private struct FeedManifestationCard: View {
 
             VStack(alignment: .leading, spacing: 2) {
                 Text(wish.authorName)
-                    .font(WWTypography.headline)
+                    .font(WWTypography.lead)
+                    .fontWeight(.semibold)
                     .foregroundStyle(WWColor.luminousText)
                 Text(wish.authorHandle)
                     .font(WWTypography.caption)
-                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                    .foregroundStyle(WWColor.luminousText.opacity(0.8))
             }
 
             Spacer()
@@ -224,23 +225,36 @@ private struct FeedManifestationCard: View {
             RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
                 .fill(
                     LinearGradient(
-                        colors: [accentColor.opacity(0.62), WWColor.deepWell.opacity(0.42)],
+                        colors: [accentColor.opacity(0.62), WWColor.deepWell.opacity(0.48)],
                         startPoint: .topLeading,
                         endPoint: .bottomTrailing
                     )
                 )
-                .frame(height: 250)
+                .frame(height: 210)
 
-            VStack(alignment: .leading, spacing: 12) {
-                Text(wish.feedbackType.rawValue)
+            // Legibility scrim: keeps the label and intention readable on any accent.
+            RoundedRectangle(cornerRadius: AppRadius.medium, style: .continuous)
+                .fill(
+                    LinearGradient(
+                        colors: [.clear, WWColor.deepWell.opacity(0.58)],
+                        startPoint: .center,
+                        endPoint: .bottom
+                    )
+                )
+                .frame(height: 210)
+                .accessibilityHidden(true)
+
+            VStack(alignment: .leading, spacing: AppSpacing.sm) {
+                Text(wish.feedbackType.rawValue.uppercased())
                     .font(WWTypography.caption)
-                    .foregroundStyle(WWColor.luminousText.opacity(AppOpacity.secondaryText))
+                    .tracking(1.2)
+                    .foregroundStyle(WWColor.luminousText.opacity(0.88))
 
                 Text(wish.intention)
                     .font(WWTypography.cardTitle)
                     .foregroundStyle(WWColor.luminousText)
                     .fixedSize(horizontal: false, vertical: true)
-                    .lineLimit(6)
+                    .lineLimit(4)
             }
             .padding(AppSpacing.lg)
         }
